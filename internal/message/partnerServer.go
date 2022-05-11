@@ -27,7 +27,7 @@ func (p *PartnerServer) TellMessage(msg Message) {
 
 func (p *PartnerServer) TellDelete(id uuid.UUID) {
 	jsonReq, _ := json.Marshal(map[string]uuid.UUID{"id": id})
-	req, _ := http.NewRequest(http.MethodPost, p.getApiAdress(), bytes.NewBuffer(jsonReq))
+	req, _ := http.NewRequest(http.MethodDelete, p.getApiAdress(), bytes.NewBuffer(jsonReq))
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	client := &http.Client{}
 	_, err := client.Do(req)

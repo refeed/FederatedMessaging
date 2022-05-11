@@ -77,10 +77,10 @@ func (as *MessageService) Receive(msg Message) {
 }
 
 func (as *MessageService) Delete(id uuid.UUID) {
-	delete(as.localDB, id)
 	if as.localDB[id].IsAnnouncement {
 		as.BroadcastDelete(id)
 	}
+	delete(as.localDB, id)
 }
 
 func (as *MessageService) Update(id uuid.UUID, body string) {

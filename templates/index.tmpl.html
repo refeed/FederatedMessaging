@@ -56,6 +56,22 @@
 
       document.addEventListener('keydown', function (e) {
         if (e.key === "Enter" && currentlyEditedMsg) {
+          if (currentlyEditedMsg.text() === '') {
+            $.ajax({
+              type: 'DELETE',
+              url: '/api/msg',
+              data: JSON.stringify({
+                "id": currentlyEditedMsg.data('id')
+              }),
+              success: function (data) {
+                location.reload()
+              },
+              error: function (data) {
+                alert(data.responseJSON)
+              }
+            });
+            return
+          }
           $.ajax({
             type: 'PATCH',
             url: '/api/msg',
