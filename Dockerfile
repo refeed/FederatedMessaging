@@ -1,5 +1,7 @@
 FROM golang:1.16-alpine
 
+LABEL maintainer="Rafid Aslam"
+
 WORKDIR /app
 
 COPY go.mod ./
