@@ -23,15 +23,21 @@ func (l *Local) RegisterRoutes() {
 
 func (l *Local) post(c *gin.Context) {
 	type NewMsgReq struct {
-		Body string
+		Passphrase string
+		Body       string
 	}
-	var message NewMsgReq
-	if err := c.ShouldBindJSON(&message); err != nil {
+	var msg NewMsgReq
+	if err := c.ShouldBindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	l.MessageService.CreateMessage(message.Body, "local", "unknown", strings.HasPrefix(message.Body, "/cast"))
+	l.MessageService.CreateMessage(
+		msg.Body,
+		"local",
+		message.GetUserIdentity(msg.Passphrase),
+		strings.HasPrefix(msg.Body, "/cast"))
+
 	c.JSON(http.StatusOK, gin.H{"status": "message received"})
 }
 

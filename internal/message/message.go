@@ -8,12 +8,18 @@ import (
 )
 
 type Message struct {
-	ID             uuid.UUID `json:id`
-	UpdatedAt      time.Time `json:updated_at`
-	Source         string    `json:source`
-	Sender         string    `json:sender`
-	Body           string    `json:body`
-	IsAnnouncement bool      `json:isAnnouncement`
+	ID        uuid.UUID `json:id`
+	UpdatedAt time.Time `json:updated_at`
+	Source    string    `json:source`
+
+	// TODO: We can use []byte instead of string for Sender
+	// SHA-1 in bytes = 20 bytes
+	// SHA-1 in string = 40 bytes
+	// 50% reduced memory
+	Sender string `json:sender`
+
+	Body           string `json:body`
+	IsAnnouncement bool   `json:isAnnouncement`
 }
 
 func NewMessageService(localDB map[uuid.UUID]Message, mutex *sync.RWMutex,
@@ -32,6 +38,7 @@ type MessageService struct {
 }
 
 func (as *MessageService) CreateMessage(body, source, sender string, isAnnouncement bool) (Message, error) {
+	// TODO: Limit the body length
 	message := Message{
 		ID:             uuid.New(),
 		UpdatedAt:      time.Now().UTC(),
