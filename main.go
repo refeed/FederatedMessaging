@@ -24,6 +24,7 @@ func main() {
 
 	(&controller.Outside{r, &messageService}).RegisterRoutes()
 	(&controller.Local{r, &messageService}).RegisterRoutes()
+	(&controller.Identity{r}).RegisterRoutes()
 	registerIndexHandler(r)
 
 	r.Run()
