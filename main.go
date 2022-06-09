@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gopkg.in/olahol/melody.v1"
 
 	"FederatedMessaging/internal/configparser"
 	"FederatedMessaging/internal/controller"
@@ -21,7 +22,9 @@ var (
 func main() {
 	messageService := createMessageService()
 	r := gin.Default()
+	m := melody.New()
 
+	(&controller.LocalWs{m, &messageService, r}).RegisterHandlers()
 	(&controller.Outside{r, &messageService}).RegisterRoutes()
 	(&controller.Local{r, &messageService}).RegisterRoutes()
 	(&controller.Identity{r}).RegisterRoutes()

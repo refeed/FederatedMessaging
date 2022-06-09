@@ -29,6 +29,14 @@
       // Using websocket would help the page to not reload
       var passphrase = prompt('Passphrase:');
 
+      // Connect to the websocket
+      const WEBSOCKET_URL = "ws://" + window.location.host + "/ws";
+      const ws = new WebSocket(WEBSOCKET_URL);
+      ws.onmessage = (msgJson) => {
+        const msg = JSON.parse(msgJson.data);
+        addMessage(msg)
+      };
+
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
       var input = document.getElementById('input');
@@ -37,23 +45,14 @@
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         if (input.value) {
-          // TODO: Use webstorage to save the passphrase
-          $.post(
-            '/api/msg',
-            JSON.stringify({ "body": input.value, "passphrase": passphrase }),
-            () => { location.reload() });
+          ws.send(JSON.stringify({ "body": input.value, "passphrase": passphrase }));
+          input.value = '';
         }
       });
 
       $.get('/api/msg', function (data) {
         data.messages.forEach(msg => {
-          let item = document.createElement('li');
-          item.classList.add('message')
-          item.dataset.id = msg.ID
-          // FIXME: We can't edit a message correctly
-          item.textContent = `${msg.Sender} : ${msg.Body}`;
-          messages.appendChild(item);
-          window.scrollTo(0, document.body.scrollHeight);
+          addMessage(msg);
         });
 
         $('.message').on('click', function (ev) {
@@ -96,6 +95,16 @@
           });
         }
       })
+
+      function addMessage(msg) {
+        let item = document.createElement('li');
+        item.classList.add('message')
+        item.dataset.id = msg.ID
+        // FIXME: We can't edit a message correctly
+        item.textContent = `<${msg.Sender}> ${msg.Body}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      }
 
     </script>
   </body>

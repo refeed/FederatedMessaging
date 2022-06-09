@@ -21,6 +21,8 @@ func (l *Local) RegisterRoutes() {
 	l.R.DELETE("/api/msg", l.delete)
 }
 
+// This endpoint might be unused anymore if the websocket endpoint
+// is used
 func (l *Local) post(c *gin.Context) {
 	type NewMsgReq struct {
 		Passphrase string
