@@ -97,12 +97,16 @@
       })
 
       function addMessage(msg) {
-        let item = document.createElement('li');
-        item.classList.add('message')
-        item.dataset.id = msg.ID
-        // FIXME: We can't edit a message correctly
-        item.textContent = `<${msg.Sender}> ${msg.Body}`;
-        messages.appendChild(item);
+        let messageItem = document.createElement('li');
+        messageItem.textContent = `${msg.UpdatedAt} <${msg.Sender}> `;
+
+        let messageContent = document.createElement('span');
+        messageContent.classList.add('message')
+        messageContent.dataset.id = msg.ID
+        messageContent.textContent = msg.Body;
+        messageItem.appendChild(messageContent);
+
+        messages.appendChild(messageItem);
         window.scrollTo(0, document.body.scrollHeight);
       }
 
