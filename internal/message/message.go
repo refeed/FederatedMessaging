@@ -40,6 +40,7 @@ type MessageService struct {
 func (as *MessageService) CreateMessage(body, source, sender string, isAnnouncement bool) (Message, error) {
 	// TODO: Limit the body length
 	message := Message{
+		// TODO: Add sendAt
 		ID:             uuid.New(),
 		UpdatedAt:      time.Now().UTC(),
 		Body:           body,
