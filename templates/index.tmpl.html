@@ -84,13 +84,14 @@
             url: '/api/msg',
             data: JSON.stringify({
               "id": currentlyEditedMsg.data('id'),
-              "body": currentlyEditedMsg.text()
+              "body": currentlyEditedMsg.text(),
+              "passphrase": passphrase
             }),
             success: function (data) {
               location.reload()
             },
             error: function (data) {
-              alert(data.responseJSON)
+              alert(data.responseText)
             }
           });
         }
@@ -98,7 +99,7 @@
 
       function addMessage(msg) {
         let messageItem = document.createElement('li');
-        messageItem.textContent = `${msg.UpdatedAt} <${msg.Sender}> `;
+        messageItem.textContent = `${(new Date(msg.UpdatedAt)).toLocaleString()} <${msg.Sender}> `;
 
         let messageContent = document.createElement('span');
         messageContent.classList.add('message')

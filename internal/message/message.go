@@ -1,6 +1,7 @@
 package message
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -91,7 +92,10 @@ func (as *MessageService) Delete(id uuid.UUID) {
 	delete(as.localDB, id)
 }
 
-func (as *MessageService) Update(id uuid.UUID, body string) {
+func (as *MessageService) Update(id uuid.UUID, body string, passphrase string) error {
+	if GetUserIdentity(passphrase) != as.localDB[id].Sender {
+		return fmt.Errorf("invalid passphrase")
+	}
 	as.mutex.Lock()
 	newMsgObj := as.localDB[id]
 	newMsgObj.Body = body
@@ -102,6 +106,7 @@ func (as *MessageService) Update(id uuid.UUID, body string) {
 	if newMsgObj.IsAnnouncement {
 		as.BroadcastUpdate(newMsgObj)
 	}
+	return nil
 }
 
 // Send message to every peer

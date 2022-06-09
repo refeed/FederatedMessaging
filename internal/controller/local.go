@@ -45,8 +45,9 @@ func (l *Local) post(c *gin.Context) {
 
 func (l *Local) patch(c *gin.Context) {
 	type UpdateMsgReq struct {
-		Id   uuid.UUID
-		Body string
+		Id         uuid.UUID
+		Body       string
+		Passphrase string
 	}
 	var updateMsgReq UpdateMsgReq
 	if err := c.ShouldBindJSON(&updateMsgReq); err != nil {
@@ -54,7 +55,15 @@ func (l *Local) patch(c *gin.Context) {
 		return
 	}
 
-	l.MessageService.Update(updateMsgReq.Id, updateMsgReq.Body)
+	err := l.MessageService.Update(
+		updateMsgReq.Id, updateMsgReq.Body, updateMsgReq.Passphrase)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"status": "message updated"})
 }
 
