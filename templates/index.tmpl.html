@@ -61,6 +61,7 @@
         })
       })
 
+      // TODO: Only add the enter keydown listener to the "message" input
       document.addEventListener('keydown', function (e) {
         if (e.key === "Enter" && currentlyEditedMsg) {
           if (currentlyEditedMsg.text() === '') {
@@ -68,13 +69,14 @@
               type: 'DELETE',
               url: '/api/msg',
               data: JSON.stringify({
-                "id": currentlyEditedMsg.data('id')
+                "id": currentlyEditedMsg.data('id'),
+                "passphrase": passphrase
               }),
               success: function (data) {
                 location.reload()
               },
               error: function (data) {
-                alert(data.responseJSON)
+                alert(data.responseText)
               }
             });
             return

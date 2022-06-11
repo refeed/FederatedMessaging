@@ -85,11 +85,19 @@ func (as *MessageService) Receive(msg Message) {
 	as.mutex.Unlock()
 }
 
-func (as *MessageService) Delete(id uuid.UUID) {
+func (as *MessageService) Delete(id uuid.UUID, passphrase string) error {
+	if GetUserIdentity(passphrase) != as.localDB[id].Sender {
+		return fmt.Errorf("invalid passphrase")
+	}
+
 	if as.localDB[id].IsAnnouncement {
 		as.BroadcastDelete(id)
 	}
+	as.mutex.Lock()
 	delete(as.localDB, id)
+	as.mutex.Unlock()
+
+	return nil
 }
 
 func (as *MessageService) Update(id uuid.UUID, body string, passphrase string) error {

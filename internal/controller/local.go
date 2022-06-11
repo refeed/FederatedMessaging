@@ -69,7 +69,8 @@ func (l *Local) patch(c *gin.Context) {
 
 func (l *Local) delete(c *gin.Context) {
 	type DeleteReq struct {
-		Id uuid.UUID
+		Id         uuid.UUID
+		Passphrase string
 	}
 	var deleteReq DeleteReq
 	if err := c.ShouldBindJSON(&deleteReq); err != nil {
@@ -77,7 +78,13 @@ func (l *Local) delete(c *gin.Context) {
 		return
 	}
 
-	l.MessageService.Delete(deleteReq.Id)
+	err := l.MessageService.Delete(deleteReq.Id, deleteReq.Passphrase)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"status": "error", "message": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"status": "message deleted"})
 }
 

@@ -33,7 +33,8 @@ func (o *Outside) post(c *gin.Context) {
 
 func (o *Outside) delete(c *gin.Context) {
 	type DeleteReq struct {
-		Id uuid.UUID
+		Id         uuid.UUID
+		Passphrase string
 	}
 	var deleteReq DeleteReq
 	if err := c.ShouldBindJSON(&deleteReq); err != nil {
@@ -41,7 +42,7 @@ func (o *Outside) delete(c *gin.Context) {
 		return
 	}
 
-	o.MessageService.Delete(deleteReq.Id)
+	o.MessageService.Delete(deleteReq.Id, deleteReq.Passphrase)
 	c.JSON(http.StatusOK, gin.H{"status": "message deleted"})
 }
 
