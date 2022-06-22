@@ -54,7 +54,7 @@ func (as *MessageService) CreateMessage(body, source, sender string, isAnnouncem
 	as.localDB[message.ID] = message
 	as.mutex.Unlock()
 	if message.IsAnnouncement {
-		as.Broadcast(message)
+		go as.Broadcast(message)
 	}
 
 	return message, nil
@@ -91,7 +91,7 @@ func (as *MessageService) Delete(id uuid.UUID, passphrase string) error {
 	}
 
 	if as.localDB[id].IsAnnouncement {
-		as.BroadcastDelete(id)
+		go as.BroadcastDelete(id, passphrase)
 	}
 	as.mutex.Lock()
 	delete(as.localDB, id)
@@ -112,7 +112,7 @@ func (as *MessageService) Update(id uuid.UUID, body string, passphrase string) e
 	as.mutex.Unlock()
 
 	if newMsgObj.IsAnnouncement {
-		as.BroadcastUpdate(newMsgObj)
+		go as.BroadcastUpdate(newMsgObj)
 	}
 	return nil
 }
@@ -124,9 +124,9 @@ func (as *MessageService) Broadcast(msg Message) {
 	}
 }
 
-func (as *MessageService) BroadcastDelete(id uuid.UUID) {
+func (as *MessageService) BroadcastDelete(id uuid.UUID, passphrase string) {
 	for _, partnerServer := range as.connectedServers {
-		partnerServer.TellDelete(id)
+		partnerServer.TellDelete(id, passphrase)
 	}
 }
 
